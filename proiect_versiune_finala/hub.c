@@ -7,7 +7,8 @@
 #include <fcntl.h>//pentri open()
 #include <string.h>
 #include <sys/wait.h> //waitpad()
-
+#include <dirent.h>
+#include <sys/stat.h>
 
 #define COM_size 111
 static pid_t monitor_pid=-1; //acesta e PID monitorului si cand nu exista atunci e -1
@@ -38,6 +39,55 @@ void write_command(const char *message)//functie care transmite comanda de la hu
 }
 
 
+void list_all_hunts() {
+    DIR *dir = opendir("."); //deschide directorul curent
+    if (!dir) {
+        perror("Nu s-a putut deschide directorul curent");
+        return;
+    }
+
+    struct dirent *entry;
+
+    //parcurgem fiecare intrare (fisier sau director)
+    while ((entry = readdir(dir)) != NULL) {
+        //ignorăm "." și ".." și fișierele care nu sunt directoare
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0){
+    continue;
+    }
+    struct stat st;
+    if (stat(entry->d_name, &st) != 0 || !S_ISDIR(st.st_mode)){
+        continue;}
+        // formăm calea către fișierul treasure_data din acel director
+        char path[512];
+        snprintf(path, sizeof(path), "%s/treasure_data", entry->d_name);
+
+        //deschidem fișierul
+        int fd = open(path, O_RDONLY);
+        if (fd < 0)
+            continue; //dacă nu există,trecem mai departe
+
+        int count = 0;
+        //structură locală pentru a citi datele unei comori
+        struct {
+            int id;
+            char user[35];
+            float longitude, latitude;
+            char clue[80];
+            int value;
+        } treasure;
+
+    
+        while (read(fd, &treasure, sizeof(treasure)) > 0)
+            count++;
+
+        close(fd); 
+
+        printf("%s: %d treasures\n", entry->d_name, count);
+    }
+
+    closedir(dir); 
+}
+
 void handle_sigusr1(int sig_type)
 {
     (void)sig_type;//face ca sa nu imi apara warning pentru ca nu il folosesc dar am nevoie la structura de declarare 
@@ -60,7 +110,11 @@ void handle_sigusr1(int sig_type)
     }
     command[strcspn(command,"\n")]='\0';//strcspn returneaza pozitia primului '\n',pe care il inlocuieste cu '\0'
 
-    if(strstr(command,"--view")!=NULL)
+    if (strcmp(command, "--list_hunts") == 0) {
+    list_all_hunts();
+    return;
+}
+    else if(strstr(command,"--view")!=NULL)
     {
         char *subsir=strtok(command," "); //subsir="--view"
         subsir=strtok(NULL," ");
@@ -107,7 +161,7 @@ void handle_sigusr1(int sig_type)
                    "--list", hunt,
                    NULL);
             perror("MError at execlp");
-            exit(1);//de ce 
+            exit(1);
         }
     }
     
@@ -157,10 +211,6 @@ void monitor_loop()
     }
 
 }
-
-
-
-
 
 //aceasta functie va porni procesul monitor in background
 //se va rula in procesul copil(fork), iar procesului parinte ii va intoarce PID-ul
@@ -229,7 +279,7 @@ void view_treasure()
 void list_hunts()
 {
     char command[COM_size];
-    snprintf(command,sizeof(command),"-list_hunts");
+    snprintf(command,sizeof(command),"--list_hunts");
     write_command(command);
     kill(monitor_pid,SIGUSR1);
      printf("S-a trimis comanda: %s\n",command);
@@ -299,7 +349,7 @@ int main(void)
         printf("4) Stop monitor and exit\n");
         printf("Select option: ");
 
-        // 2b) Citim alegerea (o linie simplă)
+        //Citim alegerea (o linie simplă)
         if (!fgets(choice, sizeof(choice), stdin)) {
             // EOF sau eroare → ieșim din buclă
             break;
@@ -325,8 +375,8 @@ int main(void)
         }
     }
 
-    // 3) Dacă am ieșit din buclă fără să comandăm stop,
-    //    ne asigurăm că monitorul nu rămâne zombie
+    //Dacă am ieșit din buclă fără să comandăm stop,
+    //ne asigurăm că monitorul nu rămâne zombie
     if (monitor_running) {
         stop_monitor();
     }
