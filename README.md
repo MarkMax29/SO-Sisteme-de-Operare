@@ -17,6 +17,7 @@ Treasure Hunt Hub este o aplicație CLI pentru organizarea vânătorilor de como
   3. gcc -Wall -o prg hub.c
   4. ./prg
 
+### EXAMPLE 
 === Starting monitor ===
 
 Monitor has started with PID: <pid_number>
@@ -26,18 +27,23 @@ Monitor has started with PID: <pid_number>
 2) List treasures in a hunt
 3) View a treasure by ID
 4) Calculate scores for a hunt
-5) Stop monitor and exit
+5) Stop monitor and exit<br>
 Select: <option> ex 1
 
-hunt_alpha: 3 treasures
+hunt_alpha: 3 treasures<br>
 hunt_beta: 5 treasures
 
 Select: <option> ex 4<br>
 Hunt name: hunt_alpha<br>
-Scores for hunt 'hunt_alpha':
-  alice: 120
+Scores for hunt 'hunt_alpha':<br>
+  alice: 120<br>
   bob:   80
 
 Select: 5<br>
 Stopping monitor...<br>
 Monitor exited normally (code 255)
+
+## 🚍 Credits
+
+  This project was made by Horvath Mark.<br>
+  This project may suffer slight modifications.
