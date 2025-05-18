@@ -1,15 +1,7 @@
 # 🏴 Treasure Hunt Hub
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/username/treasure-hub/ci.yml)]()
-[![Coverage](https://img.shields.io/codecov/c/github/username/treasure-hub)]()
-[![License](https://img.shields.io/github/license/username/treasure-hub)]()
-[![Version](https://img.shields.io/github/v/tag/username/treasure-hub)]()
-
-## 🎬 Demo
-
-![CLI Demo](docs/demo.gif)
-
 ## 📋 Short Presentation
+
 Treasure Hunt Hub este o aplicație CLI pentru organizarea vânătorilor de comori:
 
   -procese multiple comunicate prin pipe-uri și semnale
@@ -26,6 +18,7 @@ Treasure Hunt Hub este o aplicație CLI pentru organizarea vânătorilor de como
   4. ./prg
 
 === Starting monitor ===
+
 Monitor has started with PID: <pid_number>
 
 === HUB MENU ===
@@ -39,12 +32,12 @@ Select: <option> ex 1
 hunt_alpha: 3 treasures
 hunt_beta: 5 treasures
 
-Select: <option> ex 4
-Hunt name: hunt_alpha
+Select: <option> ex 4<br>
+Hunt name: hunt_alpha<br>
 Scores for hunt 'hunt_alpha':
   alice: 120
   bob:   80
 
-Select: 5
-Stopping monitor...
+Select: 5<br>
+Stopping monitor...<br>
 Monitor exited normally (code 255)
