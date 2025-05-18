@@ -89,7 +89,7 @@ void loggin_action(const char *action,char *path)//functie care salveaza sau cre
     int fis_log=open(path, O_CREAT|O_APPEND|O_WRONLY,0644);//USER rw, group & others doar r e de preferat la log 
     if(fis_log==-1)
     {
-        perror("FAILED TO OPEN THE LOG FILE !");
+        perror("FAILED TO OPEN THE LOG FILE !\n");
         exit(-1);
     }
 
@@ -135,7 +135,7 @@ void add_treasure(char *hunt,char logg_path[1024])
 
     if(f==-1)
     {
-        perror("FAILED TO OPEN FILE WITH TREASURE !");
+        perror("FAILED TO OPEN FILE WITH TREASURE !\n");
         exit(-1);
     }
 
@@ -163,7 +163,7 @@ void add_treasure(char *hunt,char logg_path[1024])
     {
         if(write(f,comoara,sizeof(TREASURE))==-1)
         {
-            perror("CAN'T ADD A NEW TREASURE");
+            perror("CAN'T ADD A NEW TREASURE\n");
             free(comoara);
             close(f);
             exit(-1);
@@ -213,7 +213,7 @@ void list(char *hunt,char logg_path[1024])
 
     if(dir==NULL)
     {
-        perror("Hunt doesn't exist!");
+        perror("Hunt doesn't exist!\n");
         closedir(dir);
         exit(-1);
     }    
@@ -225,14 +225,14 @@ void list(char *hunt,char logg_path[1024])
     int f=open(path,O_RDONLY,0777);
     if(f==-1)
     {
-        perror("Failed at openning!");
+        perror("Failed at openning!\n");
         exit(-1);
     }
 //folosim stat sa putem luam informatii despre director adica nume,nr bytes,ultima modificare 
     struct stat fis_date;
     if(stat(path,&fis_date)==-1)
     {
-        perror("CAN'T GET INFO FROM FILE! ");
+        perror("CAN'T GET INFO FROM FILE!\n");
         close(f);
         closedir(dir);
         exit(-1);       
@@ -248,7 +248,7 @@ void list(char *hunt,char logg_path[1024])
     TREASURE *t_buf=malloc(sizeof(TREASURE));
     if(t_buf==NULL)
     {
-        perror("NOT ENOUGH SPACE");
+        perror("NOT ENOUGH SPACE\n");
         free(t_buf);
         exit(-1);
     }
@@ -289,7 +289,7 @@ void remove_hunt(char *hunt,char logg_path[1024])
     dir=opendir(hunt);
     if(dir==NULL)
     {
-        perror("Doesn't exist :))");
+        perror("Doesn't exist :))\n");
         exit(-1);
     }
 
@@ -485,7 +485,7 @@ int main(int argc, char ** argv)
         }
         else
             {
-                perror("NO ARGUMENTS FOUND!");
+                perror("NO ARGUMENTS FOUND!\n");
                 exit(-1);
             }
     }
@@ -503,13 +503,13 @@ int main(int argc, char ** argv)
             remove_treasure(argv[2],log_path,id);
         }
         else{
-            perror("NOT GOOD ARGUMENTS!");
+            perror("NOT GOOD ARGUMENTS!\n");
             exit(-1);
         }
     }
     else if(argc<3)
     {
-        perror("NOT ENOUGH ARGUMENTS !");
+        perror("NOT ENOUGH ARGUMENTS !\n");
         exit(-1);
     }
     return 0;
