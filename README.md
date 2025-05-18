@@ -10,6 +10,12 @@ Treasure Hunt Hub este o aplicație CLI pentru organizarea vânătorilor de como
 
   -interfață interactivă pentru administrare
 
+###FILES
+
+ Phase 1 : found in the treasure_manager.c file and it's compiled with treasure_manager<br>
+ Phase 2 : found in the hub.c file and it's compiled with prg<br>
+ Phase 3 : foun in the calculate_score.c file as well as in the hub.c which has modifications for this phase. the calculate_score.c is compiled with calculate_score
+
 ## ✨ Example & Compile method
 
   1. gcc -Wall -o treasure_manager treasure_manager.c
