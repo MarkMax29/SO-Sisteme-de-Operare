@@ -23,7 +23,8 @@ void read_line(char *buffer, size_t size)
 {
     memset(buffer, 0, size); // curăță bufferul
 
-    ssize_t len = read(0, buffer, size - 1); // lăsăm loc pentru \0
+    //len va retine nr de octeti cititi din file descriptor(stdin in acest caz),0 daca s-a ajuns la final sau -1 daca e eroare
+    ssize_t len = read(0, buffer, size - 1); // lăsăm loc pentru \0 de aia citim max size-1
     if (len > 0) 
     {// se verifica daca s-a reusit citirea a cel putin un caracter {
         char *newline = strchr(buffer, '\n');//cauta newline in buffer si daca gaseste atunci returneaza adresa altfel NULL
@@ -140,7 +141,7 @@ void add_treasure(char *hunt,char logg_path[1024])
     }
 
     TREASURE *comoara=creare_comoare();
-    TREASURE *comoara_din_fisier=malloc(sizeof(TREASURE));
+    TREASURE *comoara_din_fisier=malloc(sizeof(TREASURE));//practic cu asta parcur fisierul treasure_data pana la momentul respectiv si compar sa vad de am comoara cu id-ul noii comori pe care vreau sa adaug
     if(comoara_din_fisier==NULL)
     {
         perror("NOT ENOUGH MEMORY!\n");
@@ -240,7 +241,7 @@ void list(char *hunt,char logg_path[1024])
 
     printf("Nume hunt: %s\n",hunt);
     printf("Dimensiune hunt: %ld\n",fis_date.st_size);
-    printf("Last modification: %s\n",ctime(&fis_date.st_atim.tv_sec));//timpul exact al utlimei modificari
+    printf("Last modification: %s\n",ctime(&fis_date.st_atim.tv_sec));//obtine timpul exact al utlimei modificari/accesari si il transforma intr-un sir de caractere 
 
  
     printf("File content: \n\n");
@@ -296,7 +297,7 @@ void remove_hunt(char *hunt,char logg_path[1024])
     char path[64];
     snprintf(path,sizeof(path),"%s/treasure_data",hunt);
 
-    char symlink[64];
+    char symlink[64];//creez numele linkului simbolic logged_hunt-hunt001(ex)
     snprintf(symlink,sizeof(symlink),"logged_hunt-%s",hunt);
 
     if(remove(path)==0)
@@ -324,6 +325,7 @@ void remove_hunt(char *hunt,char logg_path[1024])
     else{
         printf("Failed to delete loggin file !\n");
     }
+    //asta fac ultima data pentru ca doar daca directorul meu e gol poate sa il si stearga 
     if(rmdir(hunt)==0)
     {
         printf("Hunt succesfully deleted!\n");

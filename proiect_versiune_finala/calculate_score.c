@@ -28,7 +28,7 @@ int main(int argc,char **argv)
 
     //deschidem directorul hunt 
     struct stat st;
-    if(stat(hunt,&st)<0 || S_ISDIR(st.st_mode)==0)
+    if(stat(hunt,&st)==-1 || S_ISDIR(st.st_mode)==0)
     {
         perror("HUNT NOT FOUND\n");
         exit(-1);

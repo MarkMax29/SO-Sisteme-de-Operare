@@ -61,7 +61,7 @@ void write_command(const char *message)//functie care transmite comanda de la hu
 
 
 void list_all_hunts() {
-    DIR *dir = opendir("."); //deschide directorul curent
+    DIR *dir = opendir("."); //deschide directorul curent(folderul din care rulezi programul)
     if (!dir) {
         perror("Nu s-a putut deschide directorul curent\n");
         return;
@@ -71,13 +71,17 @@ void list_all_hunts() {
 
     //parcurgem fiecare intrare (fisier sau director)
     while ((entry = readdir(dir)) != NULL) {
-        //ignorăm "." și ".." și fișierele care nu sunt directoare
-    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0){
+        //ignorăm "." și ".." și fișierele care nu sunt directoare 
+        //"."= directorul curent, iar ".." este directorul părinte
+    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)// apar ca shortcuturi ,sistemul de operare le include by default
+    {
     continue;
     }
     struct stat st;
-    if (stat(entry->d_name, &st) != 0 || !S_ISDIR(st.st_mode)){
-        continue;}
+    if (stat(entry->d_name, &st) != 0 || !S_ISDIR(st.st_mode)) //daca nu e director trecem peste 
+        {
+            continue;
+        }
         // formăm calea către fișierul treasure_data din acel director
         char path[512];
         snprintf(path, sizeof(path), "%s/treasure_data", entry->d_name);
@@ -219,8 +223,8 @@ void handle_sigusr1(int sig_type)
             perror("Error at execlp la calculate\n");
             exit(1);
         }
-        wait(NULL);
-        close(STDOUT_FILENO);
+        wait(NULL);//imi blocheaza procesul monitor pana se executa procesul copil lansat de acesta 
+        close(STDOUT_FILENO);//inchidem in procesul monitor ca sa ii semnalam hubului(care citeste din pipe) ca nu mai vine nimic adica se trimite EOF
         return;
     }
     else {
@@ -290,7 +294,7 @@ pid_t start_monitor()
         perror("Error at procces\n");
         exit(-1);
     }
-    if(pid==0)//ramura copilului
+    if(pid==0)//ramura copilului (monitorul)
     {
         close(pfd_list_hunts[0]);
         close(pfd_list_treasure[0]);  
@@ -299,7 +303,7 @@ pid_t start_monitor()
         monitor_loop();
         exit(0);
     }
-    //ramura parintelui cand pid>0
+    //ramura parintelui cand pid>0 (codul efectiv al hubului)
     monitor_pid=pid;
     monitor_running=1;
 
@@ -350,7 +354,7 @@ void list_hunts()
     char command[COM_size];
     snprintf(command,sizeof(command),"--list_hunts");
     write_command(command);
-    kill(monitor_pid,SIGUSR1);
+    kill(monitor_pid,SIGUSR1);//trimite semnal la procesul copil(monitor)
     read_from_pipe(pfd_list_hunts[0]);//aici citim din pipe-ul corespunzator
 }
 void list_treasure()
@@ -427,13 +431,13 @@ int main()
     
     char choice[16];
 
-    // 1) Pornim mai întâi procesul “monitor” în background
+    //Pornim mai întâi procesul "monitor" în background
     printf("\n=== Starting monitor ===\n");
     start_monitor();
-
-    // 2) Bucla principală de interacțiune cu utilizatorul
+        //asta e procesul parinte si monitorul ruleaza in copil(o ramas in pause si asteapta semnale)
+    //Bucla principală de interacțiune cu utilizatorul
     while (1) {
-        // 2a) Afișăm meniul
+        //Afișăm meniul
         printf("\n=== HUB MENU ===\n");
         printf("1) List all hunts\n");
         printf("2) List treasures in a hunt\n");
@@ -449,7 +453,7 @@ int main()
         }
         choice[strcspn(choice, "\n")] = '\0';
 
-        // 2c) Dispecerizăm în funcție de ce a ales utilizatorul
+        //Apelam functiile in funcție de alegerea utilizatorului
         if (strcmp(choice, "1") == 0) {
             list_hunts();
         }
